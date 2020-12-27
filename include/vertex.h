@@ -28,9 +28,9 @@ public:
     return m_vert;
   }
 
-  void addNeighbour(std::shared_ptr<Vertex> neighbour)
+  void addNeighbour(std::shared_ptr<Vertex>& neighbour)
   {
-    m_vert.push_back(move(neighbour));
+    m_vert.push_back(neighbour);
   }
 
 };
