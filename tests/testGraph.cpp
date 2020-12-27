@@ -11,7 +11,7 @@ using namespace std::string_literals;
 
 std::unique_ptr<Graph> setUp()
 {
-  return std::make_unique<Graph>("inputFiles/graph.txt"s);
+  return std::make_unique<Graph>("inputFiles/graph.txt");
 }
 
 BOOST_AUTO_TEST_CASE(testCreation)

@@ -53,7 +53,7 @@ public:
   // line 0| first line is an integer containing the number of vertices
   // line i| neighbour_v_i_1(edgeWeight) neighbour_v_i_2(edgeWeight) ...
   // ...
-  explicit Graph(std::string filename)
+  explicit Graph(const char* filename)
   {
     std::ifstream iFile(filename);
     std::string line;
