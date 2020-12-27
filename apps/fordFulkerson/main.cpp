@@ -22,7 +22,7 @@ void fordFulkerson(Network& net)
     auto path = gPrime.findAugmentingPath();
     if (path.size() > 0)
     {
-      net.augmentPath(path);
+      net.augmentPath(std::move(path));
     }
     else
     {
