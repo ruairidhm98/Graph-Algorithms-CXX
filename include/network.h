@@ -47,12 +47,13 @@ public:
   int getFlow() const
   {
     auto&& nSource = m_source.getNeighbours();
-    return std::accumulate(nSource.begin(), nSource.end(), 0, [](auto&& v)
+    return std::accumulate(nSource.begin(), nSource.end(), 0, [this](int &sum, auto&& v)
     {
-      if (auto ptr = ve.lock())
+      if (auto ptr = v.lock())
       {
         sum += m_graph.getEdge(m_source, *ptr).value().getFlow();
       }
+      return sum;
     });
   }
 

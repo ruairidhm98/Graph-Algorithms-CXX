@@ -38,6 +38,7 @@ public:
 
     other.m_weight = 0;
     other.m_flow = 0;
+    return *this;
   }
 
   int const& getWeight() const

@@ -25,7 +25,7 @@ protected:
   // To save having to make a few different versions to incorporate both lvalue and rvalue references :-)
   inline void emplaceEdge(Args&&...args)
   {
-    addEdge(forward<Args>(args)...);
+    addEdge(std::forward<Args>(args)...);
   }
 
   template <typename Weight>
@@ -68,7 +68,7 @@ public:
     m_edges.resize(m_numVertices);
     for (int i = 0; i < m_numVertices; ++i)
     {
-      m_vertices.emplace_back(i);
+      m_vertices.push_back(std::make_shared<Vertex>(i));
       m_edges[i].resize(m_numVertices);
     }
     createEdges(move(iFile));
@@ -110,7 +110,7 @@ public:
       {
         if (auto ptrNeighbour = neighbour.lock())
         {
-          auto result = func(vertex, ptrNeighbour);
+          auto result = func(vertex, *ptrNeighbour);
           if (!result)
           {
             return;
