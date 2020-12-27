@@ -10,6 +10,54 @@ class ResidualGraph
 private:
   Network m_net;
 
+  std::list<std::reference_wrapper<Edge> > tracePath(std::vector<int>&& predecessor)
+  {
+    std::list<std::reference_wrapper<Edge> > path;
+    int cursor = m_net.getSink().getLabel();
+    while (cursor != -1 && predecessor[cursor] != -1)
+    {
+      path.push_front(std::ref(m_net.getGraph().getEdge(predecessor[cursor], cursor).value()));
+      cursor = predecessor[cursor];
+    }
+    return path;
+  }
+
+  std::vector<int> findPath()
+  {
+    Graph& resGraph = m_net.getGraph();
+    std::vector<bool> visited(resGraph.getNumVertices());
+    std::vector<int> predecessor(resGraph.getNumVertices(), -1);
+
+    std::queue<std::reference_wrapper<Vertex> > queue;
+    Vertex& source = m_net.getSource();
+    queue.push(std::ref(source));
+    visited[source.getLabel()] = 1;
+    // Carry out a breadth first search looking for a path from the source to the sink
+    while (queue.size() > 0)
+    {
+      Vertex const& u = queue.front().get();
+      queue.pop();
+      int uLabel = u.getLabel();
+      for (auto&& v : u.getNeighbours())
+      {
+        if (auto vPtr = v.lock())
+        {
+          int vLabel = vPtr->getLabel();
+          if (!visited[vLabel])
+          {
+            visited[vLabel] = 1;
+            predecessor[vLabel] = uLabel;
+            if (vLabel == m_net.getSink().getLabel())
+            {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return predecessor;
+  }
+
 public:
   ResidualGraph(Network& net)
   {
@@ -37,72 +85,11 @@ public:
     });
   }
 
-  std::list<Edge> findAugmentingPath()
+  std::list<std::reference_wrapper<Edge> > findAugmentingPath()
   {
-    Graph& resGraph = m_net.getGraph();
-    std::list<Edge> vertices;
-    // This *should* be a bitset implementation
-    std::vector<bool> visited(resGraph.getNumVertices());
-    // We need to carry out a breadth first search, keeping track of predecessors
-    std::vector<int> predecessor(resGraph.getNumVertices());
-    std::queue<Vertex&> queue;
-
-    queue.push(m_net.getSource());
-
+    auto predecessor = findPath();
+    return tracePath(std::move(predecessor));
   }
 
 
 };
-
-/*
-public LinkedList<Edge> findAugmentingPath() {
-
-        LinkedList<Edge> path = new LinkedList<Edge>();
-
-        // Carry out a breadth first search, keeping track of the predecessors
-        int pred[] = new int[numVertices];
-        Queue<Vertex> queue = new LinkedList<Vertex>();
-
-        // Initialisation
-        int i = 0;
-        for (Vertex v : vertices) {
-            v.visited = false;
-            pred[i++] = -1;
-        }
-
-        // The path starts from the source, so make this the first vertex to be processed, and clearly
-        // it has no predecessor in terms of this path, so use -1 as a flag to indicate no predecessor
-        queue.add(source);
-        pred[source.getLabel()] = -1;
-        source.visited = true;
-        boolean exit = false;
-        while(queue.size() > 0 && !exit) {
-            Vertex u = queue.poll();
-            int uLabel = u.getLabel();
-            for (Vertex v : adjLists.get(uLabel)) {
-                int vLabel = v.getLabel();
-            	if (!v.visited) {
-                    v.visited = true;
-                    pred[vLabel] = uLabel;
-                    if (vLabel == sink.getLabel()) {
-                        exit = true;
-                        break;
-                    }
-	                queue.add(v);
-            	}
-            }
-        }
-
-        // Trace the path from the sink to the source, adding each edge
-        int cursor = sink.getLabel();
-        // While there is still edges on the path
-        while (cursor != -1 && pred[cursor] != -1) {
-            path.addFirst(adjMatrix[pred[cursor]][cursor]);
-            cursor = pred[cursor];
-        }
-
-        return path;
-    }
-
-
-*/

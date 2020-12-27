@@ -114,13 +114,23 @@ public:
     return m_edges[v1][v2];
   }
 
+  std::optional<Edge>& getEdge(int v1, int v2)
+  {
+    return m_edges[v1][v2];
+  }
+
+  std::optional<Edge>& getEdge(Vertex& v1, Vertex& v2)
+  {
+    return getEdge(v1.getLabel(), v2.getLabel());
+  }
+
   void addEdge(Vertex const& v1, Vertex const& v2, int weight)
   {
     m_edges[v1.getLabel()][v2.getLabel()] = Edge(m_vertices[v1.getLabel()], m_vertices[v2.getLabel()], weight);
   }
 
   template <typename Func>
-  void visitVertices(Func&& func)
+  void visitVertices(Func&& func) const
   {
     // Traverse graph and apply function to each vertex
     for (int i = 0; i < m_numVertices; ++i)
