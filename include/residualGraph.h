@@ -2,31 +2,36 @@
 
 #include "network.h"
 #include <list>
+#include <queue>
+#include <vector>
 
 class ResidualGraph
 {
 private:
-  Graph m_graph;
+  Network m_net;
 
 public:
   ResidualGraph(Network& net)
   {
     // Initialise the vertices and edges of the graph
-    m_graph.initialiseGraph(net.getGraph().getNumVertices());
+    Graph& resGraph = m_net.getGraph();
+    resGraph.initialiseGraph(net.getGraph().getNumVertices());
     
     Graph& g = net.getGraph();
-    g.visitVertices([this,&g](Vertex const& v1, Vertex const& v2)
+    m_net.setSource(g.getVertex(0));
+    m_net.setSink(g.getVertex(g.getNumVertices()-1));
+    g.visitVertices([this,&g,&resGraph](Vertex const& v1, Vertex const& v2)
     {
       Edge const& e = g.getEdge(v1, v2).value();
       // If we can still push flow through the edge and if the edge has not already been created
-      if (e.getFlow() < e.getWeight() && !m_graph.getEdge(v1, v2).has_value())
+      if (e.getFlow() < e.getWeight() && !resGraph.getEdge(v1, v2).has_value())
       {
-        m_graph.addEdge(v1, v2, e.getWeight() - e.getFlow());
+        resGraph.addEdge(v1, v2, e.getWeight() - e.getFlow());
       }
       // If we can 'reverse' the flow of the edge and if the edge has not already been created
-      if (e.getFlow() > 0 && !m_graph.getEdge(v2, v1).has_value())
+      if (e.getFlow() > 0 && !resGraph.getEdge(v2, v1).has_value())
       {
-        m_graph.addEdge(v2, v1, std::move(e.getFlow()));
+        resGraph.addEdge(v2, v1, std::move(e.getFlow()));
       }
       return true;
     });
@@ -34,11 +39,16 @@ public:
 
   std::list<Edge> findAugmentingPath()
   {
+    Graph& resGraph = m_net.getGraph();
     std::list<Edge> vertices;
     // This *should* be a bitset implementation
-    std::vector<bool> visited(m_graph.getNumVertices());
-
+    std::vector<bool> visited(resGraph.getNumVertices());
     // We need to carry out a breadth first search, keeping track of predecessors
+    std::vector<int> predecessor(resGraph.getNumVertices());
+    std::queue<Vertex&> queue;
+
+    queue.push(m_net.getSource());
+
   }
 
 

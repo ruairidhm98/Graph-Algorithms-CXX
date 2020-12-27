@@ -11,15 +11,19 @@ class Network
 {
 private:
   Graph m_graph;
-  Vertex const& m_source;
-  Vertex const& m_sink;
+  // Graph might be initialised with default constructor so these won't be made yet
+  std::optional<std::reference_wrapper<Vertex> > m_source;
+  std::optional<std::reference_wrapper<Vertex> > m_sink;
 public:
   // Creates the graph from input filename
   explicit Network(const char* filename)
     : m_graph(filename)
-    , m_source(m_graph.getVertex(0))
-    , m_sink(m_graph.getVertex(m_graph.getNumVertices()-1))
+    , m_source(std::ref(m_graph.getVertex(0)))
+    , m_sink(std::ref(m_graph.getVertex(m_graph.getNumVertices()-1)))
   {}
+
+  Network() = default;
+  
 
   // Returns the true if the graph is a valid flow
   bool isValidFlow()
@@ -46,7 +50,7 @@ public:
   // Returns the flow in the network. This is the sum of outgoing flows from the source vertex
   int getFlow() const
   {
-    auto&& nSource = m_source.getNeighbours();
+    auto&& nSource = m_source.value().getNeigbours();
     return std::accumulate(nSource.begin(), nSource.end(), 0, [this](int &sum, auto&& v)
     {
       if (auto ptr = v.lock())
@@ -65,6 +69,26 @@ public:
   Graph const& getGraph() const
   {
     return m_graph;
+  }
+
+  Vertex& getSource()
+  {
+    return m_source.value();
+  }
+
+  Vertex& getSink()
+  {
+    return m_sink.value();
+  }
+
+  void setSource(Vertex& source)
+  {
+    m_source = std::ref(source);
+  }
+
+  void setSink(Vertex& sink)
+  {
+    m_sink = std::ref(sink);
   }
 
 };
