@@ -21,15 +21,8 @@ private:
   int m_numVertices;
 
 protected:
-  template <typename ...Args>
-  // To save having to make a few different versions to incorporate both lvalue and rvalue references :-)
-  inline void emplaceEdge(Args&&...args)
-  {
-    addEdge(std::forward<Args>(args)...);
-  }
 
-  template <typename Weight>
-  inline void addEdge(std::shared_ptr<Vertex>& v1, std::shared_ptr<Vertex>& v2, Weight&& weight)
+  inline void addEdge(std::shared_ptr<Vertex>& v1, std::shared_ptr<Vertex>& v2, int&& weight)
   {
     m_edges[v1->getLabel()][v2->getLabel()] = std::move(Edge(v1, v2, weight));
   }
@@ -39,7 +32,7 @@ protected:
   {
     std::string line;
     int vertex = 0;
-    while (getline(iFile, line))
+    while (std::getline(iFile, line))
     {
       std::stringstream ss(line);
       int adjacentVertex = 0, edgeWeight;
@@ -47,7 +40,7 @@ protected:
       // Line will be in format e.g. 1(2), vertex 0 has edge to vertex 1 of weight 2
       while (ss >> adjacentVertex >> b >> edgeWeight >> b)
       {
-        emplaceEdge(m_vertices[vertex], m_vertices[adjacentVertex], std::move(edgeWeight));
+        addEdge(m_vertices[vertex], m_vertices[adjacentVertex], std::move(edgeWeight));
         m_vertices[vertex]->addNeighbour(m_vertices[adjacentVertex]);
       }
       ++vertex;        
@@ -60,11 +53,12 @@ public:
   // line 0| first line is an integer containing the number of vertices
   // line i| neighbour_v_i_1(edgeWeight) neighbour_v_i_2(edgeWeight) ...
   // ...
-  Graph(const char* filename)
+  explicit Graph(std::string filename)
   {
     std::ifstream iFile(filename);
-    iFile >> m_numVertices;
-    iFile.ignore();
+    std::string line;
+    std::getline(iFile, line);
+    m_numVertices = std::stoi(line);
     m_edges.resize(m_numVertices);
     for (int i = 0; i < m_numVertices; ++i)
     {
@@ -111,10 +105,7 @@ public:
         if (auto ptrNeighbour = neighbour.lock())
         {
           auto result = func(vertex, *ptrNeighbour);
-          if (!result)
-          {
-            return;
-          }
+          if (!result) return;
         }
       }
     }

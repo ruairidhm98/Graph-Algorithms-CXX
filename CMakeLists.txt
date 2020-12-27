@@ -5,5 +5,8 @@ project(GraphAlgorithms)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
-add_subdirectory(tests)
+include_directories(inputFiles)
 add_subdirectory(apps)
+
+enable_testing()
+add_subdirectory(tests)
