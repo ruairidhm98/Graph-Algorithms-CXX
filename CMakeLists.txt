@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.19.1)
 
-project(GraphAlgorithms)
+project(GraphAlgorithms CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(FILE_PATH "${PROJECT_SOURCE_DIR}/inputFiles" CACHE FILEPATH "Full path of the file")
 
 include_directories(include)
-include_directories(inputFiles)
 add_subdirectory(apps)
 
 enable_testing()
