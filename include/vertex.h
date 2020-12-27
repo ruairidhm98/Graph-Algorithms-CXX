@@ -19,12 +19,7 @@ public:
     return m_label;
   }
 
-  std::vector<std::weak_ptr<Vertex> > const& getNeighbours() const
-  {
-    return m_vert;
-  }
-
-  std::vector<std::weak_ptr<Vertex> >& getNeighburs()
+  std::vector<std::weak_ptr<Vertex> >& getNeighbours()
   {
     return m_vert;
   }

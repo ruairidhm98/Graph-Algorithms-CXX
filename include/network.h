@@ -92,27 +92,12 @@ public:
     return m_graph;
   }
 
-  Graph const& getGraph() const
-  {
-    return m_graph;
-  }
-
   Vertex& getSource()
   {
     return m_source.value().get();
   }
 
   Vertex& getSink()
-  {
-    return m_sink.value().get();
-  }
-
-  Vertex const& getSource() const
-  {
-    return m_source.value().get();
-  }
-
-  Vertex const& getSink() const
   {
     return m_sink.value().get();
   }
