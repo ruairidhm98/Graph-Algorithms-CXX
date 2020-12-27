@@ -27,8 +27,6 @@ public:
     , m_sink(std::ref(m_graph.getVertex(m_graph.getNumVertices()-1)))
   {}
 
-  
-
   // Returns the true if the graph is a valid flow
   bool isValidFlow() const
   {
