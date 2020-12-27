@@ -2,6 +2,7 @@
 
 #include "graph.h"
 #include <algorithm>
+#include <list>
 #include <numeric>
 #include <vector>
 
@@ -28,24 +29,23 @@ public:
   {}
 
   // Returns the true if the graph is a valid flow
-  bool isValidFlow() const
+  bool isValidFlow()
   {
     const int numVertices = m_graph.getNumVertices();
     // Sum of incoming edges must be the same as sum of outgoing edges and flow must be > 0
     std::vector<int> outgoingFlow(numVertices), incomingFlow(numVertices);
     // Carry out full traversal of graph to compute outgoing and incoming flows for all v in V
-    m_graph.visitEdges(
-      [this,&outgoingFlow,&incomingFlow](Vertex const& v1, Vertex const& v2)
+    m_graph.visitEdges([this,&outgoingFlow,&incomingFlow](Edge const& edge)
+    {
+      int const& flow = edge.getFlow();
+      int v1 = edge.getV1().getLabel(), v2 = edge.getV2().getLabel();
+      if (flow < 0 || flow > edge.getWeight())
       {
-        auto const& edge = m_graph.getEdge(v1, v2).value();
-        int const& flow = edge.getFlow();
-        if (flow < 0 || flow > edge.getWeight())
-        {
-          return false;
-        }
-        outgoingFlow[v1.getLabel()] = incomingFlow[v2.getLabel()] = flow;
-        return true;
-      });
+        return false;
+      }
+      outgoingFlow[v1] = incomingFlow[v2] = flow;
+      return true;
+    });
     return std::equal(outgoingFlow.begin()+1, outgoingFlow.begin()+numVertices-1, incomingFlow.begin());
   }
 
