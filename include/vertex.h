@@ -34,4 +34,17 @@ public:
     m_vert.push_back(neighbour);
   }
 
+  template <typename Func>
+  // Encapsulate visitng vertices in a function to avoid having to explicitly access the weak pointer outwith the class
+  void visitNeighbours(Func&& func)
+  {
+    for (auto&& weakV : m_vert)
+    {
+      if (auto ptr = weakV.lock())
+      {
+        func(*ptr);
+      }
+    }
+  } 
+
 };

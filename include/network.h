@@ -11,7 +11,7 @@ class Network
 {
 private:
   Graph m_graph;
-  // Graph might be initialised with default constructor so these won't be made yet
+  // Graph might be initialised with default constructor so these won't be made yet. Use optional to avoid pointers
   std::optional<std::reference_wrapper<Vertex> > m_source;
   std::optional<std::reference_wrapper<Vertex> > m_sink;
 
@@ -27,8 +27,6 @@ public:
     , m_sink(std::ref(m_graph.getVertex(m_graph.getNumVertices()-1)))
   {}
 
-  
-
   // Returns the true if the graph is a valid flow
   bool isValidFlow() const
   {
@@ -36,7 +34,7 @@ public:
     // Sum of incoming edges must be the same as sum of outgoing edges and flow must be > 0
     std::vector<int> outgoingFlow(numVertices), incomingFlow(numVertices);
     // Carry out full traversal of graph to compute outgoing and incoming flows for all v in V
-    m_graph.visitVertices(
+    m_graph.visitEdges(
       [this,&outgoingFlow,&incomingFlow](Vertex const& v1, Vertex const& v2)
       {
         auto const& edge = m_graph.getEdge(v1, v2).value();
@@ -55,15 +53,12 @@ public:
   int getFlow() const
   {
     auto&& source = m_source.value().get();
-    auto&& nSource = source.getNeighbours();
-    return std::accumulate(nSource.begin(), nSource.end(), 0, [this,&source](int &sum, auto&& v)
+    int sum = 0;
+    source.visitNeighbours([this,&sum,&source](Vertex& v)
     {
-      if (auto ptr = v.lock())
-      {
-        sum += m_graph.getEdge(source, *ptr).value().getFlow();
-      }
-      return sum;
+      sum += m_graph.getEdge(source, v).value().getFlow();
     });
+    return sum;
   }
 
   Graph& getGraph()

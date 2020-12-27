@@ -130,7 +130,7 @@ public:
   }
 
   template <typename Func>
-  void visitVertices(Func&& func) const
+  void visitEdges(Func&& func) const
   {
     // Traverse graph and apply function to each vertex
     for (int i = 0; i < m_numVertices; ++i)
