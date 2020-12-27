@@ -62,6 +62,31 @@ public:
     return sum;
   }
 
+  void augmentPath(std::list<std::reference_wrapper<Edge> > path)
+  {   
+    auto minEdge = std::min_element(path.begin(), path.end(),
+      [](auto const& e1, auto const& e2)
+      {
+        return e1.get().getFlow() < e2.get().getFlow();
+      });
+    auto minFlow = minEdge->get().getFlow();
+    for (auto&& e : path)
+    {
+      auto& edge = e.get();
+      auto& optFwEdge = m_graph.getEdge(edge.getV1(), edge.getV2());
+      if (optFwEdge.has_value() && (edge.getFlow() + minFlow <= edge.getWeight()))
+      {
+        auto& fwEdge = optFwEdge.value();
+        fwEdge.setFlow(edge.getFlow() + minFlow);
+      }
+      else
+      {
+        auto& revEdge = m_graph.getEdge(edge.getV2(), edge.getV1()).value();
+        revEdge.setFlow(revEdge.getFlow() - minFlow);
+      }
+    }
+  }
+
   Graph& getGraph()
   {
     return m_graph;
@@ -100,6 +125,22 @@ public:
   void setSink(Vertex& sink)
   {
     m_sink = std::ref(sink);
+  }
+
+  int getNumVertices()
+  {
+    return m_graph.getNumVertices();
+  }
+
+  Vertex& getVertex(int label)
+  {
+    return m_graph.getVertex(label);
+  }
+
+  template <typename Func>
+  void visitEdges(Func&& func)
+  {
+    m_graph.visitEdges(std::forward<Func>(func));
   }
 
 };

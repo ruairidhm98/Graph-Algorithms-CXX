@@ -124,9 +124,14 @@ public:
     return getEdge(v1.getLabel(), v2.getLabel());
   }
 
+  void addEdge(int v1, int v2, int weight)
+  {
+    m_edges[v1][v2] = Edge(m_vertices[v1], m_vertices[v2], weight);
+  }
+
   void addEdge(Vertex const& v1, Vertex const& v2, int weight)
   {
-    m_edges[v1.getLabel()][v2.getLabel()] = Edge(m_vertices[v1.getLabel()], m_vertices[v2.getLabel()], weight);
+    addEdge(v1.getLabel(), v2.getLabel(), weight);
   }
 
   template <typename Func>
@@ -140,7 +145,7 @@ public:
       {
         if (auto ptrNeighbour = neighbour.lock())
         {
-          auto result = func(vertex, *ptrNeighbour);
+          auto result = func(getEdge(vertex, *ptrNeighbour).value());
           if (!result) return;
         }
       }

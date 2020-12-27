@@ -67,10 +67,10 @@ public:
     Graph& g = net.getGraph();
     m_net.setSource(g.getVertex(0));
     m_net.setSink(g.getVertex(g.getNumVertices()-1));
-    g.visitEdges([this,&g,&resGraph](Vertex const& v1, Vertex const& v2)
+    g.visitEdges([this,&g,&resGraph](Edge const& e)
     {
-      Edge const& e = g.getEdge(v1, v2).value();
       // If we can still push flow through the edge and if the edge has not already been created
+      int v1 = e.getV1().getLabel(), v2 = e.getV2().getLabel();
       if (e.getFlow() < e.getWeight() && !resGraph.getEdge(v1, v2).has_value())
       {
         resGraph.addEdge(v1, v2, e.getWeight() - e.getFlow());

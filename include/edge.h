@@ -61,4 +61,24 @@ public:
     return m_flow;
   }
 
+  Vertex& getV1()
+  {
+    return *(m_v1.lock());
+  }
+
+  Vertex& getV2()
+  {
+    return *(m_v2.lock());
+  }
+
+  Vertex const& getV1() const
+  {
+    return *(m_v1.lock());
+  }
+
+  Vertex const& getV2() const
+  {
+    return *(m_v2.lock());
+  }
+
 };
