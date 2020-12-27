@@ -11,18 +11,26 @@ class Network
 {
 private:
   Graph m_graph;
-  Vertex const& m_source;
-  Vertex const& m_sink;
+  // Graph might be initialised with default constructor so these won't be made yet
+  std::optional<std::reference_wrapper<Vertex> > m_source;
+  std::optional<std::reference_wrapper<Vertex> > m_sink;
+
+  Network() = default;
+
+  friend class ResidualGraph;
+
 public:
   // Creates the graph from input filename
   explicit Network(const char* filename)
     : m_graph(filename)
-    , m_source(m_graph.getVertex(0))
-    , m_sink(m_graph.getVertex(m_graph.getNumVertices()-1))
+    , m_source(std::ref(m_graph.getVertex(0)))
+    , m_sink(std::ref(m_graph.getVertex(m_graph.getNumVertices()-1)))
   {}
 
+  
+
   // Returns the true if the graph is a valid flow
-  bool isValidFlow()
+  bool isValidFlow() const
   {
     const int numVertices = m_graph.getNumVertices();
     // Sum of incoming edges must be the same as sum of outgoing edges and flow must be > 0
@@ -46,12 +54,13 @@ public:
   // Returns the flow in the network. This is the sum of outgoing flows from the source vertex
   int getFlow() const
   {
-    auto&& nSource = m_source.getNeighbours();
-    return std::accumulate(nSource.begin(), nSource.end(), 0, [this](int &sum, auto&& v)
+    auto&& source = m_source.value().get();
+    auto&& nSource = source.getNeighbours();
+    return std::accumulate(nSource.begin(), nSource.end(), 0, [this,&source](int &sum, auto&& v)
     {
       if (auto ptr = v.lock())
       {
-        sum += m_graph.getEdge(m_source, *ptr).value().getFlow();
+        sum += m_graph.getEdge(source, *ptr).value().getFlow();
       }
       return sum;
     });
@@ -65,6 +74,36 @@ public:
   Graph const& getGraph() const
   {
     return m_graph;
+  }
+
+  Vertex& getSource()
+  {
+    return m_source.value().get();
+  }
+
+  Vertex& getSink()
+  {
+    return m_sink.value().get();
+  }
+
+  Vertex const& getSource() const
+  {
+    return m_source.value().get();
+  }
+
+  Vertex const& getSink() const
+  {
+    return m_sink.value().get();
+  }
+
+  void setSource(Vertex& source)
+  {
+    m_source = std::ref(source);
+  }
+
+  void setSink(Vertex& sink)
+  {
+    m_sink = std::ref(sink);
   }
 
 };

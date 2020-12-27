@@ -89,38 +89,48 @@ public:
     ++m_numVertices;
   }
 
-  inline Vertex& getVertex(int label)
+  Vertex& getVertex(int label)
   {
     return *m_vertices[label];
   }
 
-  inline Vertex const& getVertex(int label) const
+  Vertex const& getVertex(int label) const
   {
     return *m_vertices[label];
   }
 
-  inline int getNumVertices() const
+  int getNumVertices() const
   {
     return m_numVertices;
   }
 
-  inline std::optional<Edge> const& getEdge(Vertex const& v1, Vertex const &v2) const
+  std::optional<Edge> const& getEdge(Vertex const& v1, Vertex const &v2) const
   {
     return getEdge(v1.getLabel(), v2.getLabel());
   }
 
-  inline std::optional<Edge> const& getEdge(int v1, int v2) const
+  std::optional<Edge> const& getEdge(int v1, int v2) const
   {
     return m_edges[v1][v2];
   }
 
-  inline void addEdge(Vertex const& v1, Vertex const& v2, int weight)
+  std::optional<Edge>& getEdge(int v1, int v2)
+  {
+    return m_edges[v1][v2];
+  }
+
+  std::optional<Edge>& getEdge(Vertex& v1, Vertex& v2)
+  {
+    return getEdge(v1.getLabel(), v2.getLabel());
+  }
+
+  void addEdge(Vertex const& v1, Vertex const& v2, int weight)
   {
     m_edges[v1.getLabel()][v2.getLabel()] = Edge(m_vertices[v1.getLabel()], m_vertices[v2.getLabel()], weight);
   }
 
   template <typename Func>
-  void visitVertices(Func&& func)
+  void visitVertices(Func&& func) const
   {
     // Traverse graph and apply function to each vertex
     for (int i = 0; i < m_numVertices; ++i)
