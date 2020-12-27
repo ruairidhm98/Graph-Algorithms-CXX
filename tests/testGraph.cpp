@@ -4,10 +4,6 @@
 
 #include <boost/test/included/unit_test.hpp>
 #include <memory>
-#include <string>
-#include <stdio.h>
-
-using namespace std::string_literals;
 
 std::unique_ptr<Graph> setUp()
 {
