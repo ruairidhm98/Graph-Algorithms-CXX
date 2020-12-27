@@ -20,12 +20,9 @@ private:
   // number of vertices in the graph
   int m_numVertices;
 
-protected:
+  friend class ResidualGraph;
 
-  inline void addEdge(std::shared_ptr<Vertex>& v1, std::shared_ptr<Vertex>& v2, int&& weight)
-  {
-    m_edges[v1->getLabel()][v2->getLabel()] = std::move(Edge(v1, v2, weight));
-  }
+protected:
 
   // Reads the file
   void createEdges(std::ifstream&& iFile)
@@ -47,6 +44,22 @@ protected:
     }
   }
 
+  void initialiseGraph(int numVertices)
+  {
+    m_numVertices = numVertices;
+    m_edges.resize(numVertices);
+    for (int i = 0; i < m_numVertices; ++i)
+    {
+      m_vertices.push_back(std::make_shared<Vertex>(i));
+      m_edges[i].resize(m_numVertices);
+    }
+  }
+
+  inline void addEdge(std::shared_ptr<Vertex>& v1, std::shared_ptr<Vertex>& v2, int weight)
+  {
+    m_edges[v1->getLabel()][v2->getLabel()] = std::move(Edge(v1, v2, weight));
+  }
+
 public:
 
   // Assume file is in format
@@ -58,14 +71,22 @@ public:
     std::ifstream iFile(filename);
     std::string line;
     std::getline(iFile, line);
-    m_numVertices = std::stoi(line);
-    m_edges.resize(m_numVertices);
-    for (int i = 0; i < m_numVertices; ++i)
-    {
-      m_vertices.push_back(std::make_shared<Vertex>(i));
-      m_edges[i].resize(m_numVertices);
-    }
+    initialiseGraph(std::stoi(line));
     createEdges(move(iFile));
+  }
+
+  Graph()
+    : m_numVertices(0)
+  {}
+
+  void addVertex(int label)
+  {
+    if (label < m_vertices.size())
+    {
+      m_vertices.resize(label+1);
+    }
+    m_vertices[label] = std::make_shared<Vertex>(label);
+    ++m_numVertices;
   }
 
   inline Vertex& getVertex(int label)
@@ -91,6 +112,11 @@ public:
   inline std::optional<Edge> const& getEdge(int v1, int v2) const
   {
     return m_edges[v1][v2];
+  }
+
+  inline void addEdge(Vertex const& v1, Vertex const& v2, int weight)
+  {
+    m_edges[v1.getLabel()][v2.getLabel()] = Edge(m_vertices[v1.getLabel()], m_vertices[v2.getLabel()], weight);
   }
 
   template <typename Func>

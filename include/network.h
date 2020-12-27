@@ -14,8 +14,8 @@ private:
   Vertex const& m_source;
   Vertex const& m_sink;
 public:
-  // Assumes same graph format
-  Network(const char* filename)
+  // Creates the graph from input filename
+  explicit Network(const char* filename)
     : m_graph(filename)
     , m_source(m_graph.getVertex(0))
     , m_sink(m_graph.getVertex(m_graph.getNumVertices()-1))
@@ -55,6 +55,16 @@ public:
       }
       return sum;
     });
+  }
+
+  Graph& getGraph()
+  {
+    return m_graph;
+  }
+
+  Graph const& getGraph() const
+  {
+    return m_graph;
   }
 
 };
