@@ -72,7 +72,7 @@ public:
     std::string line;
     std::getline(iFile, line);
     initialiseGraph(std::stoi(line));
-    createEdges(move(iFile));
+    createEdges(std::move(iFile));
   }
 
   Graph()
