@@ -4,6 +4,7 @@
 #include "vertex.h"
 
 #include <fstream>
+#include <optional>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -14,8 +15,8 @@ class Graph
 private:
   // vertices in the graph, each contains adjacency list for faster traversals
   std::vector<std::shared_ptr<Vertex> > m_vertices;
-  // adjacency matrix representation for fast lookups of edge weights
-  std::vector<std::vector<std::unique_ptr<Edge> > > edges;
+  // adjacency matrix representation for fast lookups of edge weights, use optional to avoid null pointers
+  std::vector<std::vector<std::optional<Edge> > > m_edges;
   // number of vertices in the graph
   int m_numVertices;
 
@@ -30,27 +31,12 @@ protected:
   template <typename Weight>
   inline void addEdge(std::shared_ptr<Vertex>& v1, std::shared_ptr<Vertex>& v2, Weight&& weight)
   {
-    edges[v1->getLabel()][v2->getLabel()] = make_unique<Edge>(v1, v2, weight);
+    m_edges[v1->getLabel()][v2->getLabel()] = move(Edge(v1, v2, weight));
   }
 
-public:
-  // Graph MUST be in format
-  // numVertices
-  // Space seperated matrix
-  Graph(const char* filename)
+  // Reads the file
+  void createEdges(std::ifstream&& iFile)
   {
-    std::ifstream iFile(filename);
-    iFile >> m_numVertices;
-    iFile.ignore(); // ignore new line character
-    for (int i = 0; i < m_numVertices; ++i)
-    {
-      m_vertices.emplace_back(i);
-    }
-    edges.resize(m_numVertices);
-    for (auto&& ve : edges)
-    {
-      ve.resize(m_numVertices);
-    }
     std::string line;
     int vertex = 0;
     while (getline(iFile, line))
@@ -63,14 +49,29 @@ public:
         {
           emplaceEdge(m_vertices[vertex], m_vertices[adjacentVertex], edgeWeight);
         }
-        else
-        {
-          edges[vertex][adjacentVertex] = nullptr;
-        }
         ++adjacentVertex;
       }
       ++vertex;        
     }
+  }
+
+public:
+  // Graph MUST be in format
+  // numVertices
+  // Space seperated matrix
+  Graph(const char* filename)
+  {
+    std::ifstream iFile(filename);
+    iFile >> m_numVertices;
+    iFile.ignore(); // ignore new line character
+    m_edges.resize(m_numVertices);
+    for (int i = 0; i < m_numVertices; ++i)
+    {
+      m_vertices.emplace_back(i);
+      m_edges[i].resize(m_numVertices);
+    }
+    
+    createEdges(move(iFile));
   }
 
   inline std::shared_ptr<Vertex> const& getVertex(int label) const
