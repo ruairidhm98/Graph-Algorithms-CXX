@@ -35,25 +35,24 @@ private:
     // Carry out a breadth first search looking for a path from the source to the sink
     while (queue.size() > 0)
     {
-      Vertex const& u = queue.front().get();
+      Vertex& u = queue.front().get();
       queue.pop();
-      int uLabel = u.getLabel();
-      for (auto&& v : u.getNeighbours())
+      u.visitNeighbours([&](Vertex& v)
       {
-        if (auto vPtr = v.lock())
+        int vLabel = v.getLabel(), uLabel = u.getLabel();
+        if (!visited[vLabel])
         {
-          int vLabel = vPtr->getLabel();
-          if (!visited[vLabel])
+          visited[vLabel] = 1;
+          predecessor[vLabel] = uLabel;
+          // Path has been found, return true
+          if (vLabel == m_net.getSink().getLabel())
           {
-            visited[vLabel] = 1;
-            predecessor[vLabel] = uLabel;
-            if (vLabel == m_net.getSink().getLabel())
-            {
-              break;
-            }
+            return true;
           }
+          queue.push(std::ref(v));
         }
-      }
+        return false;
+      });    
     }
     return predecessor;
   }
@@ -68,7 +67,7 @@ public:
     Graph& g = net.getGraph();
     m_net.setSource(g.getVertex(0));
     m_net.setSink(g.getVertex(g.getNumVertices()-1));
-    g.visitVertices([this,&g,&resGraph](Vertex const& v1, Vertex const& v2)
+    g.visitEdges([this,&g,&resGraph](Vertex const& v1, Vertex const& v2)
     {
       Edge const& e = g.getEdge(v1, v2).value();
       // If we can still push flow through the edge and if the edge has not already been created

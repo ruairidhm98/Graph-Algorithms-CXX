@@ -42,7 +42,8 @@ public:
     {
       if (auto ptr = weakV.lock())
       {
-        func(*ptr);
+        auto stop = func(*ptr);
+        if (stop) return;
       }
     }
   } 
