@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <iostream>
 #include <vector>
 
 class Vertex
@@ -10,24 +9,11 @@ private:
   std::vector<std::weak_ptr<Vertex> > m_vert;
   const int m_label;
 public:
-  explicit Vertex(int label)
-    : m_label(label)
-  {}
 
-  int const& getLabel() const
-  {
-    return m_label;
-  }
-
-  std::vector<std::weak_ptr<Vertex> >& getNeighbours()
-  {
-    return m_vert;
-  }
-
-  void addNeighbour(std::shared_ptr<Vertex>& neighbour)
-  {
-    m_vert.push_back(neighbour);
-  }
+  explicit Vertex(int label);
+  int const& getLabel() const;
+  std::vector<std::weak_ptr<Vertex> >& getNeighbours();
+  void addNeighbour(std::shared_ptr<Vertex>& neighbour);
 
   template <typename Func>
   // Encapsulate visitng vertices in a function to avoid having to explicitly access the weak pointer outwith the class
