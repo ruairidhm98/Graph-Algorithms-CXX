@@ -81,4 +81,9 @@ public:
     return *(m_v2.lock());
   }
 
+  void print(char end='\n') const
+  {
+    std::cout << "{" << getV1().getLabel() << "," << getV2().getLabel() << "}" << end;
+  }
+
 };

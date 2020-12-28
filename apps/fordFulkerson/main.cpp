@@ -19,6 +19,7 @@ void fordFulkerson(Network& net)
   for (;;)
   {
     ResidualGraph gPrime(net);
+    //net.print();
     auto path = gPrime.findAugmentingPath();
     if (path.size() > 0)
     {

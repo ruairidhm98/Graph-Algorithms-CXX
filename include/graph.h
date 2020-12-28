@@ -22,8 +22,6 @@ private:
 
   friend class ResidualGraph;
 
-protected:
-
   // Reads the file
   void createEdges(std::ifstream&& iFile)
   {
@@ -127,6 +125,7 @@ public:
   void addEdge(int v1, int v2, int weight)
   {
     m_edges[v1][v2] = Edge(m_vertices[v1], m_vertices[v2], weight);
+    m_vertices[v1]->addNeighbour(m_vertices[v2]);
   }
 
   void addEdge(Vertex const& v1, Vertex const& v2, int weight)
@@ -135,6 +134,7 @@ public:
   }
 
   template <typename Func>
+  // Visits every edge in the graph, func is expected to return an indicator that signifies wehter search can stop. (See vertex.h)
   void visitEdges(Func&& func)
   {
     // Traverse graph and apply function to each vertex

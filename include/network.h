@@ -63,7 +63,7 @@ public:
   int getFlow() const
   {
     int sum = 0;
-    if (auto source =  m_source.lock())
+    if (auto source = m_source.lock())
     {
       source->visitNeighbours([this,&sum,&source](Vertex& v)
       {
@@ -79,21 +79,22 @@ public:
     auto minEdge = std::min_element(path.begin(), path.end(),
       [](auto const& e1, auto const& e2)
       {
-        return e1.get().getFlow() < e2.get().getFlow();
+        return e1.get().getWeight() < e2.get().getWeight();
       });
-    auto minFlow = minEdge->get().getFlow();
+    int minFlow = minEdge->get().getWeight();
     for (auto&& e : path)
     {
-      auto& edge = e.get();
-      auto& optFwEdge = m_graph.getEdge(edge.getV1(), edge.getV2());
+      auto&& edge = e.get();
+      
+      auto&& optFwEdge = m_graph.getEdge(edge.getV1(), edge.getV2());
       if (optFwEdge.has_value() && (edge.getFlow() + minFlow <= edge.getWeight()))
       {
-        auto& fwEdge = optFwEdge.value();
-        fwEdge.setFlow(edge.getFlow() + minFlow);
+        auto&& fwEdge = optFwEdge.value();
+        fwEdge.setFlow(fwEdge.getFlow() + minFlow);
       }
       else
       {
-        auto& revEdge = m_graph.getEdge(edge.getV2(), edge.getV1()).value();
+        auto&& revEdge = m_graph.getEdge(edge.getV2(), edge.getV1()).value();
         revEdge.setFlow(revEdge.getFlow() - minFlow);
       }
     }
@@ -128,6 +129,16 @@ public:
   void visitEdges(Func&& func)
   {
     m_graph.visitEdges(std::forward<Func>(func));
+  }
+
+  void print()
+  {
+    m_graph.visitEdges([](Edge const& e)
+    {
+      e.print(' ');
+      std::cout << e.getFlow() << "(" << e.getWeight() << ")\n";
+      return true;
+    });
   }
 
 };

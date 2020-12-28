@@ -13,6 +13,7 @@ std::unique_ptr<Network> setUp()
 BOOST_AUTO_TEST_CASE(testValidFlow)
 {
   auto network = setUp();
+  network->print();
   // Should be a valid flow
   BOOST_TEST(network->isValidFlow());
 }
