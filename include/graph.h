@@ -89,9 +89,9 @@ public:
     ++m_numVertices;
   }
 
-  Vertex& getVertex(int label)
+  std::shared_ptr<Vertex> getVertex(int label)
   {
-    return *m_vertices[label];
+    return m_vertices[label];
   }
 
   Vertex const& getVertex(int label) const
@@ -141,11 +141,11 @@ public:
     for (int i = 0; i < m_numVertices; ++i)
     {
       auto&& vertex = getVertex(i);
-      for (auto&& neighbour : vertex.getNeighbours())
+      for (auto&& neighbour : vertex->getNeighbours())
       {
         if (auto ptrNeighbour = neighbour.lock())
         {
-          auto result = func(getEdge(vertex, *ptrNeighbour).value());
+          auto result = func(getEdge(*vertex, *ptrNeighbour).value());
           if (!result) return;
         }
       }

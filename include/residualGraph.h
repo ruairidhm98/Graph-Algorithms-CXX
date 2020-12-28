@@ -13,7 +13,7 @@ private:
   std::list<std::reference_wrapper<Edge> > tracePath(std::vector<int>&& predecessor)
   {
     std::list<std::reference_wrapper<Edge> > path;
-    int cursor = m_net.getSink().getLabel();
+    int cursor = m_net.getSink()->getLabel();
     while (cursor != -1 && predecessor[cursor] != -1)
     {
       path.push_front(std::ref(m_net.getGraph().getEdge(predecessor[cursor], cursor).value()));
@@ -29,9 +29,9 @@ private:
     std::vector<int> predecessor(resGraph.getNumVertices(), -1);
 
     std::queue<std::reference_wrapper<Vertex> > queue;
-    Vertex& source = m_net.getSource();
-    queue.push(std::ref(source));
-    visited[source.getLabel()] = 1;
+    auto&& source = m_net.getSource();
+    queue.push(std::ref(*source));
+    visited[source->getLabel()] = 1;
     // Carry out a breadth first search looking for a path from the source to the sink
     while (queue.size() > 0)
     {
@@ -45,7 +45,7 @@ private:
           visited[vLabel] = 1;
           predecessor[vLabel] = uLabel;
           // Path has been found, return true
-          if (vLabel == m_net.getSink().getLabel())
+          if (vLabel == m_net.getSink()->getLabel())
           {
             return true;
           }

@@ -3,6 +3,7 @@
 #include "graph.h"
 #include <algorithm>
 #include <list>
+#include <memory>
 #include <numeric>
 #include <vector>
 
@@ -12,11 +13,20 @@ class Network
 {
 private:
   Graph m_graph;
-  // Graph might be initialised with default constructor so these won't be made yet. Use optional to avoid pointers
-  std::optional<std::reference_wrapper<Vertex> > m_source;
-  std::optional<std::reference_wrapper<Vertex> > m_sink;
+  std::weak_ptr<Vertex> m_source;
+  std::weak_ptr<Vertex> m_sink;
 
   Network() = default;
+
+  void setSource(std::shared_ptr<Vertex> source)
+  {
+    m_source = source;
+  }
+
+  void setSink(std::shared_ptr<Vertex> sink)
+  {
+    m_sink = sink;
+  }
 
   friend class ResidualGraph;
 
@@ -24,8 +34,8 @@ public:
   // Creates the graph from input filename
   explicit Network(const char* filename)
     : m_graph(filename)
-    , m_source(std::ref(m_graph.getVertex(0)))
-    , m_sink(std::ref(m_graph.getVertex(m_graph.getNumVertices()-1)))
+    , m_source(m_graph.getVertex(0))
+    , m_sink(m_graph.getVertex(m_graph.getNumVertices()-1))
   {}
 
   // Returns the true if the graph is a valid flow
@@ -52,13 +62,15 @@ public:
   // Returns the flow in the network. This is the sum of outgoing flows from the source vertex
   int getFlow() const
   {
-    auto&& source = m_source.value().get();
     int sum = 0;
-    source.visitNeighbours([this,&sum,&source](Vertex& v)
+    if (auto source =  m_source.lock())
     {
-      sum += m_graph.getEdge(source, v).value().getFlow();
-      return 0;
-    });
+      source->visitNeighbours([this,&sum,&source](Vertex& v)
+      {
+        sum += m_graph.getEdge(*source, v).value().getFlow();
+        return 0;
+      });
+    }
     return sum;
   }
 
@@ -92,24 +104,14 @@ public:
     return m_graph;
   }
 
-  Vertex& getSource()
+  std::shared_ptr<Vertex> getSource()
   {
-    return m_source.value().get();
+    return m_source.lock();
   }
 
-  Vertex& getSink()
+  std::shared_ptr<Vertex> getSink()
   {
-    return m_sink.value().get();
-  }
-
-  void setSource(Vertex& source)
-  {
-    m_source = std::ref(source);
-  }
-
-  void setSink(Vertex& sink)
-  {
-    m_sink = std::ref(sink);
+    return m_sink.lock();
   }
 
   int getNumVertices()
@@ -119,7 +121,7 @@ public:
 
   Vertex& getVertex(int label)
   {
-    return m_graph.getVertex(label);
+    return *m_graph.getVertex(label);
   }
 
   template <typename Func>
