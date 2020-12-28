@@ -11,7 +11,7 @@ class ResidualGraph
 private:
   Network m_net;
 
-  std::list<std::reference_wrapper<Edge> > tracePath(std::vector<int>&& predecessor);
+  std::list<std::reference_wrapper<Edge> > tracePath(std::vector<int> predecessor);
   std::vector<int> findPath();
 
 public:

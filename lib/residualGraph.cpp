@@ -30,7 +30,7 @@ ResidualGraph::ResidualGraph(Network& net)
   });
 }
 
-std::list<std::reference_wrapper<Edge> > ResidualGraph::tracePath(std::vector<int>&& predecessor)
+std::list<std::reference_wrapper<Edge> > ResidualGraph::tracePath(std::vector<int> predecessor)
 {
   std::list<std::reference_wrapper<Edge> > path;
   int cursor = m_net.getSink()->getLabel();
