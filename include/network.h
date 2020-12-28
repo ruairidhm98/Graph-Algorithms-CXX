@@ -68,7 +68,7 @@ public:
       source->visitNeighbours([this,&sum,&source](Vertex& v)
       {
         sum += m_graph.getEdge(*source, v).value().getFlow();
-        return 0;
+        return 1;
       });
     }
     return sum;

@@ -39,8 +39,8 @@ public:
     {
       if (auto ptr = weakV.lock())
       {
-        auto stop = func(*ptr);
-        if (stop) return;
+        auto result = func(*ptr);
+        if (!result) return;
       }
     }
   } 

@@ -40,26 +40,23 @@ private:
     {
       Vertex& u = queue.front().get();
       queue.pop();
-      int uLabel = u.getLabel();
-      for (auto&& ptr : u.getNeighbours())
+      u.visitNeighbours([&](Vertex &v)
       {
-        if (auto v = ptr.lock())
+        int vLabel = v.getLabel(), uLabel = u.getLabel();
+        if (!visited[vLabel])
         {
-          int vLabel = v->getLabel();
-          if (!visited[vLabel])
+          visited[vLabel] = 1;
+          predecessor[vLabel] = uLabel;
+          // Path has been found, return true
+          if (vLabel == m_net.getSink()->getLabel())
           {
-            visited[vLabel] = 1;
-            predecessor[vLabel] = uLabel;
-            // Path has been found, return true
-            if (vLabel == m_net.getSink()->getLabel())
-            {
-              done = true;
-              break;
-            }
-            queue.push(*v);
+            done = true;
+            return false;
           }
+          queue.push(v);
         }
-      }   
+        return true;
+      });
     }
     return predecessor;
   }
