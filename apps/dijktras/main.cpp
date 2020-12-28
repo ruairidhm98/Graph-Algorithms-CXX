@@ -51,8 +51,7 @@ int main(int argc, char** argv)
 
   Graph g(argv[1]);
   int source = std::atoi(argv[2]), target = std::atoi(argv[3]);
-  dijktras(g, source, end);
-
+  dijktras(g, source, target);
 
   return 0;
 }
