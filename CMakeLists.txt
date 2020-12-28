@@ -7,6 +7,7 @@ set(FILE_PATH "${PROJECT_SOURCE_DIR}/graphs" CACHE FILEPATH "Full path of the fi
 
 include_directories(include)
 add_subdirectory(apps)
+add_subdirectory(lib)
 
 enable_testing()
 add_subdirectory(tests)

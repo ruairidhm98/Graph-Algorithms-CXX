@@ -1,4 +1,7 @@
-#include "graph.h"
+#include "edge.h"
+#include "vertex.h"
+
+#include <iostream>
 
 Edge::Edge(std::shared_ptr<Vertex> v1, std::shared_ptr<Vertex> v2, int weight)
   : m_v1(v1)
@@ -69,7 +72,7 @@ Vertex const& Edge::getV2() const
   return *(m_v2.lock());
 }
 
-void Edge::print(char end='\n') const
+void Edge::print(char end) const
 {
   std::cout << "{" << getV1().getLabel() << "," << getV2().getLabel() << "}" << end;
 }

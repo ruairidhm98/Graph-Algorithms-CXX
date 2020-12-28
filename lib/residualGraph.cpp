@@ -3,6 +3,10 @@
 #include "network.h"
 #include "residualGraph.h"
 
+#include <list>
+#include <queue>
+#include <vector>
+
 ResidualGraph::ResidualGraph(Network& net)
 {
   // Initialise the vertices and edges of the graph
@@ -67,7 +71,6 @@ std::vector<int> ResidualGraph::findPath()
       {
         visited[vLabel] = 1;
         predecessor[vLabel] = uLabel;
-        // Path has been found, return true
         if (vLabel == m_net.getSink()->getLabel())
         {
           done = true;

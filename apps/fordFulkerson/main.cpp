@@ -1,3 +1,4 @@
+#include "edge.h"
 #include "network.h"
 #include "residualGraph.h"
 

@@ -1,11 +1,12 @@
 #pragma once
 
+#include "edge.h"
+#include "vertex.h"
+
 #include <optional>
 #include <memory>
 #include <vector>
 
-class Edge;
-class Vertex;
 
 class Graph
 {
@@ -40,7 +41,7 @@ public:
 
   // Visits every edge in the graph, func is expected to return an indicator that signifies whether search can stop.
   template <typename Func>
-  void Graph::visitEdges(Func&& func)
+  void visitEdges(Func&& func)
   {
     // Traverse graph and apply function to each vertex
     for (int i = 0; i < m_numVertices; ++i)

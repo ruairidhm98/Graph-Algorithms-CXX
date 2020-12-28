@@ -1,7 +1,7 @@
 #pragma once
 
+#include <functional>
 #include <list>
-#include <queue>
 #include <vector>
 
 class Network;
@@ -15,6 +15,7 @@ private:
   std::vector<int> findPath();
 
 public:
+
   explicit ResidualGraph(Network& net);
   std::list<std::reference_wrapper<Edge> > findAugmentingPath();
 

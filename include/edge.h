@@ -1,7 +1,8 @@
 #pragma once
 
-#include "vertex.h"
 #include <memory>
+
+class Vertex;
 
 class Edge
 {
