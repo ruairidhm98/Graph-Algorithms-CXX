@@ -63,9 +63,8 @@ void outputSolution(std::vector<int> predecessor, std::vector<int> dist, int& so
 
 void dijktras(Graph& g, int source, int target)
 {
-  // Keep track of who is visited, this should be a bitset
-  std::vector<bool> visited(g.getNumVertices());
-  // Predecessor array to keep track of actual path
+  // Predecessor array to keep track of actual path. Maintain a distance vector as
+  // alternative is to lookup the map O(logn), so keep this fast with vector O(1)
   std::vector<int> predecessor(g.getNumVertices()), dist(g.getNumVertices());
 
   auto cmp = [&](auto const& v1, auto const& v2)
