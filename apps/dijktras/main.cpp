@@ -46,7 +46,7 @@ void printPath(int curVertex, std::vector<int> predecessor)
 void outputSolution(std::vector<int> predecessor, std::vector<int> dist, int& source, int& target)
 {
   // If there is a path from source to target
-  if (dist[target] != INT_MAX && target < dist.size())
+  if (dist[target] != INT_MAX)
   {   
     std::cout << "Shortest distance from " << source << " to " << target;
     std::cout << ": " << dist[target] << std::endl;
@@ -121,6 +121,13 @@ int main(int argc, char** argv)
 
   Graph g(argv[1]);
   int source = std::atoi(argv[2]), target = std::atoi(argv[3]);
+  int numVertices = g.getNumVertices();
+  if (source >= numVertices || target >= numVertices)
+  {
+    std::cerr << "Please specify vertices that are actually in the graph" << std::endl;
+    return -2;
+  }
+
   dijktras(g, source, target);
 
   return 0;
