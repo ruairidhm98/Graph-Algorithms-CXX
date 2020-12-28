@@ -9,22 +9,20 @@
 
 Network::Network() = default;
 
-void Network::setSource(std::shared_ptr<Vertex> source)
-{
-  m_source = source;
-}
-
-void Network::setSink(std::shared_ptr<Vertex> sink)
-{
-  m_sink = sink;
-}
-
 // Creates the graph from input filename
 Network::Network(const char* filename)
   : m_graph(filename)
   , m_source(m_graph.getVertex(0))
   , m_sink(m_graph.getVertex(m_graph.getNumVertices()-1))
 {}
+
+// Initialise graph with number of vertices, to be called if used with default constructor
+void Network::initialiseGraph(int numVertices)
+{
+  m_graph.initialiseGraph(numVertices);
+  m_source = m_graph.getVertex(0);
+  m_sink = m_graph.getVertex(numVertices-1);
+}
 
 // Returns the true if the graph is a valid flow
 bool Network::isValidFlow()
@@ -122,4 +120,3 @@ void Network::print()
     return true;
   });
 }
-

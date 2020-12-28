@@ -10,25 +10,21 @@
 ResidualGraph::ResidualGraph(Network& net)
 {
   // Initialise the vertices and edges of the graph
-  Graph& resGraph = m_net.getGraph();
-  resGraph.initialiseGraph(net.getGraph().getNumVertices());
+  m_net.initialiseGraph(net.getGraph().getNumVertices());
   
-  Graph& g = net.getGraph();
-
-  m_net.setSource(resGraph.getVertex(0));
-  m_net.setSink(resGraph.getVertex(resGraph.getNumVertices()-1));
+  Graph& g = net.getGraph(), &resGraph = m_net.getGraph();
   g.visitEdges([&](Edge const& e)
   {
     // If we can still push flow through the edge and if the edge has not already been created
     int v1 = e.getV1().getLabel(), v2 = e.getV2().getLabel();
-    if (e.getFlow() < e.getWeight() && !m_net.getGraph().getEdge(v1, v2).has_value())
+    if (e.getFlow() < e.getWeight() && !resGraph.getEdge(v1, v2).has_value())
     {
-      m_net.getGraph().addEdge(v1, v2, e.getWeight() - e.getFlow());
+      resGraph.addEdge(v1, v2, e.getWeight() - e.getFlow());
     }
     // If we can 'reverse' the flow of the edge and if the edge has not already been created
-    if (e.getFlow() > 0 && !m_net.getGraph().getEdge(v2, v1).has_value())
+    if (e.getFlow() > 0 && !resGraph.getEdge(v2, v1).has_value())
     {
-      m_net.getGraph().addEdge(v2, v1, e.getFlow());
+      resGraph.addEdge(v2, v1, e.getFlow());
     }
     return true;
   });
@@ -84,10 +80,8 @@ std::vector<int> ResidualGraph::findPath()
   return predecessor;
 }
 
-
 std::list<std::reference_wrapper<Edge> > ResidualGraph::findAugmentingPath()
 {
   auto predecessor = findPath();
   return tracePath(std::move(predecessor));
 }
-

@@ -18,7 +18,7 @@ private:
   // number of vertices in the graph
   int m_numVertices;
 
-  friend class ResidualGraph;
+  friend class Network;
 
   void createEdges(std::ifstream&& iFile);
   void initialiseGraph(int numVertices);

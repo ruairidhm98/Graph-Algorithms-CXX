@@ -15,8 +15,7 @@ private:
   std::weak_ptr<Vertex> m_sink;
 
   Network();
-  void setSource(std::shared_ptr<Vertex> source);
-  void setSink(std::shared_ptr<Vertex> sink);
+  void initialiseGraph(int numVertices);
 
   friend class ResidualGraph;
 
