@@ -29,7 +29,7 @@ void initialise(Graph& g, std::vector<int>& dist, int& source, Map&& pq)
         dist[i] = INT_MAX;
       }
     }
-    pq.insert({i, dist[i]});
+    pq[i] = dist[i];
   }
 }
 
